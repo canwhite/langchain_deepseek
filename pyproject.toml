@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "langchain-test"
+version = "0.1.0"
+description = "langchain and deepseek"
+authors = ["qiaochao <qiaochao@icourt.cc>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+langchain = "^0.2.16"
+langchain-openai = "^0.1.23"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

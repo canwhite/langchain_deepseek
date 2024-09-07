@@ -19,3 +19,8 @@ OpenAIEmbedding:
 用户需要注册 OpenAI 的 API 密钥，并通过 API 请求获取嵌入结果。
 
 '''
+# from langchain.embeddings.openai import OpenAIEmbeddings # need open ai id
+from langchain_huggingface import HuggingFaceEmbeddings
+
+
+embedding = HuggingFaceEmbeddings()

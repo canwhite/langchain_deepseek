@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "langchain-test"
+name = "langchain-deepseek"
 version = "0.1.0"
 description = "langchain and deepseek"
 authors = ["qiaochao <qiaochao@icourt.cc>"]
@@ -11,7 +11,6 @@ langchain = "^0.2.16"
 langchain-openai = "^0.1.23"
 pypdf = "^4.3.1"
 langchain-community = "^0.2.16"
-sentence-transformers = "^3.0.1"
 langchain-huggingface = "^0.0.3"
 chromadb = "^0.5.5"
 

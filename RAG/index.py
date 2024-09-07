@@ -1,8 +1,8 @@
-from langchain.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 # from langchain.embeddings.openai import OpenAIEmbeddings # need open ai id
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 # 1）加载 PDF
 loaders_chinese = [
     # 故意添加重复文档，使数据混乱

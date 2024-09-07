@@ -9,6 +9,11 @@ readme = "README.md"
 python = "^3.11"
 langchain = "^0.2.16"
 langchain-openai = "^0.1.23"
+pypdf = "^4.3.1"
+langchain-community = "^0.2.16"
+sentence-transformers = "^3.0.1"
+langchain-huggingface = "^0.0.3"
+chromadb = "^0.5.5"
 
 
 [build-system]

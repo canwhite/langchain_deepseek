@@ -16,7 +16,7 @@ for loader in loaders_chinese:
 
 # 2）分割文本
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size = 1000,  # 每个文本块的大小。这意味着每次切分文本时，会尽量使每个块包含 1500 个字符。
+    chunk_size = 1500,  # 每个文本块的大小。这意味着每次切分文本时，会尽量使每个块包含 1500 个字符。
     chunk_overlap = 150  # 每个文本块之间的重叠部分。
 )
 
@@ -49,9 +49,9 @@ question_chinese = "Matplotlib是什么？"
 docs_chinese = vectordb_chinese.similarity_search(question_chinese,k=3)
 
 for doc_chinese in docs_chinese:
-    print(doc_chinese.metadata,doc_chinese.page_content)
+    print(doc_chinese.metadata)
 
-# print(docs_chinese[0].page_content)
+print("---result---",docs_chinese[0].page_content)
 
 # 4.3）持久化, 现在已经是自动化的了
 # vectordb_chinese.persist()

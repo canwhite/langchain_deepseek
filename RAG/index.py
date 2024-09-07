@@ -13,6 +13,7 @@ import os
 from langchain.chains import RetrievalQA
 
 
+# pre: llm
 API_KEY=  os.getenv("DEEPSEEK_KEY")
 BASE_URL = "https://api.deepseek.com"
 

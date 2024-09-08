@@ -10,5 +10,5 @@ deepseek and langchain are used together to realize RAG
 ```
 poetry shell
 poetry install
-poetry run python RAG/index.py
+poetry run python rag/index.py
 ```

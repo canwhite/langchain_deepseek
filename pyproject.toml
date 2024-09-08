@@ -14,6 +14,9 @@ langchain-community = "^0.2.16"
 langchain-huggingface = "^0.0.3"
 chromadb = "^0.5.5"
 lark = "^1.2.2"
+panel = "^1.4.5"
+param = "^2.1.1"
+docarray = "^0.40.0"
 
 
 [build-system]

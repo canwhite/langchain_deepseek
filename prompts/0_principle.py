@@ -22,14 +22,12 @@ text = f"""
 # 允许在字符串中嵌入表达式。
 # 使用 f 字符串时，可以在字符串前加上 'f' 或 'F'，然后在字符串中使用花括号 {} 来嵌入变量或表达式。
 
+# 指令内容，使用 ``` 来分隔指令和待总结的内容
 prompt = f"""
 把用三个反引号括起来的文本总结成一句话。
 ```{text}```
 """
 
-# 指令内容，使用 ``` 来分隔指令和待总结的内容
-# response = get_completion(prompt)
-# print(response)
 
 # -------------2)寻求结构化的输出-----------------
 prompt = f"""
@@ -37,8 +35,7 @@ prompt = f"""
 并以 JSON 格式提供，其中包含以下键:book_id、title、author、genre。
 """
 
-# response = get_completion(prompt)
-# print(response)
+
 
 
 # -------------3)要求模型检查是否满足条件-----------------
@@ -62,9 +59,6 @@ prompt = f"""
 如果文本中不包含一系列的指令，则直接写“未提供步骤”。"
 \"\"\"{text_1}\"\"\"
 """
-response = get_completion(prompt)
-# print("Text 1 的总结:")
-# print(response)
 
 
 # -------------4)提供少量示例-----------------
@@ -78,11 +72,6 @@ prompt = f"""
 
 <孩子>: 请教我何为韧性。
 """
-# response = get_completion(prompt)
-# print(response)
-
-
-
 
 
 

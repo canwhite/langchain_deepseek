@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 
 # os.path.abspath(__file__) 获取当前文件的绝对路径。
 # os.path.dirname() 获取指定路径的目录部分。
@@ -15,5 +16,13 @@ llm = SingletonChatOpenAI().llm
 def get_completion(prompt):
     result =  llm.invoke(prompt)
     return result.content
+
+def is_valid_json(json_str):
+    try:
+        json.loads(json_str)
+        return True
+    except json.JSONDecodeError:
+        return False
+
 
 

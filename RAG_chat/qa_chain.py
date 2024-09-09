@@ -36,6 +36,9 @@ def load_db(file, chain_type, k):
     # 定义 Embeddings，我们将它置换为HUGGINGFACE embeddings
     embedding = HuggingFaceEmbeddings()
     # 根据数据创建向量数据库
+    # 该部分代码用于创建向量数据库。首先，我们使用 HuggingFaceEmbeddings 生成文档的嵌入向量。
+    # 然后，我们使用 DocArrayInMemorySearch.from_documents 方法将这些嵌入向量存储在内存中，以便快速检索。
+    # 这个向量数据库将用于后续的检索任务，帮助聊天机器人找到与用户查询最相关的文档片段。
     db = DocArrayInMemorySearch.from_documents(docs, embedding)
     # 定义检索器
     retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": k})

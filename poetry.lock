@@ -3309,6 +3309,22 @@ files = [
 ]
 
 [[package]]
+name = "redlines"
+version = "0.4.2"
+description = "Compare text, and produce human-readable differences or deltas which look like track changes in Microsoft Word."
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "redlines-0.4.2-py3-none-any.whl", hash = "sha256:f0fc90025ea138232c20d7444b4490fc48c17e822097755f0fc281bd07f9ee63"},
+    {file = "redlines-0.4.2.tar.gz", hash = "sha256:e6bc0411fc52d8095447029ba18cd194d36d251ba1c2587480ba14669e6bebaa"},
+]
+
+[package.dependencies]
+click = ">=8.1.3,<9.0.0"
+rich = ">=13.3.5,<14.0.0"
+rich-click = ">=1.6.1,<2.0.0"
+
+[[package]]
 name = "regex"
 version = "2024.7.24"
 description = "Alternative regular expression module, to replace re."
@@ -3452,6 +3468,26 @@ pygments = ">=2.13.0,<3.0.0"
 
 [package.extras]
 jupyter = ["ipywidgets (>=7.5.1,<9)"]
+
+[[package]]
+name = "rich-click"
+version = "1.8.3"
+description = "Format click help output nicely with rich"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "rich_click-1.8.3-py3-none-any.whl", hash = "sha256:636d9c040d31c5eee242201b5bf4f2d358bfae4db14bb22ec1cafa717cfd02cd"},
+    {file = "rich_click-1.8.3.tar.gz", hash = "sha256:6d75bdfa7aa9ed2c467789a0688bc6da23fbe3a143e19aa6ad3f8bac113d2ab3"},
+]
+
+[package.dependencies]
+click = ">=7"
+rich = ">=10.7"
+typing-extensions = "*"
+
+[package.extras]
+dev = ["mypy", "packaging", "pre-commit", "pytest", "pytest-cov", "rich-codex", "ruff", "types-setuptools"]
+docs = ["markdown-include", "mkdocs", "mkdocs-glightbox", "mkdocs-material-extensions", "mkdocs-material[imaging] (>=9.5.18,<9.6.0)", "mkdocs-rss-plugin", "mkdocstrings[python]", "rich-codex"]
 
 [[package]]
 name = "rsa"
@@ -4919,4 +4955,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "cc77ac7c889e5cff8d3db9578386272e350e1cba5d22565981a21ed6e9e08b86"
+content-hash = "c43792f9aff2bda1e724cb6c222be8de8126251e37b104840ed430aa7e43bb9c"

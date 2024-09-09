@@ -1,6 +1,7 @@
 from tool import get_completion
 import time
 from IPython.display import display, Markdown, Latex, HTML, JSON
+from redlines import Redlines
 '''
 大语言模型具有强大的文本转换能力，
 可以实现多语言翻译、拼写纠正、语法调整、格式转换等不同类型的文本转换任务。 
@@ -123,8 +124,9 @@ display(HTML(response))
 '''
 
 '''
-# 关于
-
+# 关于types4要显示比对错误
+diff = Redlines(text,response)
+display(Markdown(diff.output_markdown))
 
 '''
 

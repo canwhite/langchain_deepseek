@@ -13,8 +13,14 @@ from llm_ds import SingletonChatOpenAI
 llm = SingletonChatOpenAI().llm
 
 #温度系数控制多样性，越大越高
+#适用于单轮对话
 def get_completion(prompt,temperature=0.7):
     result =  llm.invoke(prompt,temperature=temperature)
+    return result.content
+
+#可传入消息列表
+def get_completion_from_messages(messages,temperature=0):
+    result =  llm.invoke(messages,temperature=temperature)
     return result.content
 
 

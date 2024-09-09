@@ -1,6 +1,6 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-#首先要理解，有各种各样的加载器，我们这里主要讲pdf的加载器
+#首先要理解，有各种各样的加载器视频、文本、pef and so on，我们这里主要讲pdf的加载器
 #0）加载单个
 loader = PyPDFLoader("docs/第一回：Matplotlib初相识.pdf")
 documents = loader.load()

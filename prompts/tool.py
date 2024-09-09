@@ -12,10 +12,11 @@ from llm_ds import SingletonChatOpenAI
 
 llm = SingletonChatOpenAI().llm
 
-
-def get_completion(prompt):
-    result =  llm.invoke(prompt)
+#温度系数控制多样性，越大越高
+def get_completion(prompt,temperature=0.7):
+    result =  llm.invoke(prompt,temperature=temperature)
     return result.content
+
 
 def is_valid_json(json_str):
     try:

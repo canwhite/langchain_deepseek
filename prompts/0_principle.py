@@ -1,5 +1,5 @@
 from tool import get_completion
-# prompt 原则
+# prompt 原则, 主要是是清晰和思考
 
 
 '''

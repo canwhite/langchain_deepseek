@@ -17,6 +17,7 @@ lark = "^1.2.2"
 panel = "^1.4.5"
 param = "^2.1.1"
 docarray = "^0.40.0"
+ipython = "^8.27.0"
 
 
 [build-system]

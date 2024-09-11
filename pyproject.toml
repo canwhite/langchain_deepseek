@@ -19,6 +19,7 @@ param = "^2.1.1"
 docarray = "^0.40.0"
 ipython = "^8.27.0"
 redlines = "^0.4.2"
+pandas = "^2.2.2"
 
 
 [build-system]

@@ -276,6 +276,7 @@ router_chain = LLMRouterChain.from_llm(llm, router_prompt)
 
 
 # 创建整体链路
+# 路由链路接收到信息，给到目标链路，然后目标链路返回结果，如果没有匹配到走default
 chain = MultiPromptChain(router_chain=router_chain,    #l路由链路
                          destination_chains=destination_chains,   #目标链路
                          default_chain=default_chain,      #默认链路

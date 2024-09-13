@@ -1,6 +1,8 @@
 
 from tool import get_completion
-
+from langchain.prompts import ChatPromptTemplate
+from langchain.output_parsers import ResponseSchema
+from langchain.output_parsers import StructuredOutputParser
 
 '''
 ========================section1: model =========================
@@ -17,7 +19,6 @@ result =  llm.invoke(prompt,temperature=temperature)
 ========================section2:使用提示模版======================
 '''
 
-from langchain.prompts import ChatPromptTemplate
 
 # 首先，构造一个提示模版字符串：`template_string`
 template_string = """把由三个反引号分隔的文本\
@@ -86,8 +87,7 @@ review_template_2 = """\
 prompt = ChatPromptTemplate.from_template(template=review_template_2)
 
 
-from langchain.output_parsers import ResponseSchema
-from langchain.output_parsers import StructuredOutputParser
+
 
 
 response_schemas = [ResponseSchema(name="礼物",

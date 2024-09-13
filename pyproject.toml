@@ -20,6 +20,9 @@ docarray = "^0.40.0"
 ipython = "^8.27.0"
 redlines = "^0.4.2"
 pandas = "^2.2.2"
+langchain-experimental = "^0.0.65"
+numexpr = "^2.10.1"
+wikipedia = "^1.4.0"
 
 
 [build-system]

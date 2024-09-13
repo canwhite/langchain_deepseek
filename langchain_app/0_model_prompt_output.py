@@ -90,24 +90,16 @@ from langchain.output_parsers import ResponseSchema
 from langchain.output_parsers import StructuredOutputParser
 
 
-gift_schema = ResponseSchema(name="礼物",
+response_schemas = [ResponseSchema(name="礼物",
                              description="这件物品是作为礼物送给别人的吗？\
                             如果是，则回答 是的，\
-                            如果否或未知，则回答 不是。")
-
-
-delivery_days_schema = ResponseSchema(name="交货天数",
+                            如果否或未知，则回答 不是。"), 
+                    ResponseSchema(name="交货天数",
                                       description="产品需要多少天才能到达？\
-                                      如果没有找到该信息，则输出-1。")
-
-price_value_schema = ResponseSchema(name="价钱",
+                                      如果没有找到该信息，则输出-1。"),
+                    ResponseSchema(name="价钱",
                                     description="提取有关价值或价格的任何句子，\
-                                    并将它们输出为逗号分隔的 Python 列表")
-
-
-response_schemas = [gift_schema, 
-                    delivery_days_schema,
-                    price_value_schema]
+                                    并将它们输出为逗号分隔的 Python 列表")]
 
 #parser接收scheme作为参数
 output_parser = StructuredOutputParser.from_response_schemas(response_schemas)

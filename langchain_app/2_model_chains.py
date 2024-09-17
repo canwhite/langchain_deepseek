@@ -126,9 +126,9 @@ from langchain.chains.router.llm_router import LLMRouterChain,RouterOutputParser
 from langchain.prompts import PromptTemplate
 
 
-# 1)首先我们定义可以使用于不同场景的提示模版
-# 中文
-#第一个提示适合回答物理问题
+'''
+------------------1）不同类型问题的提示模版-----------------------
+'''
 physics_template = """你是一个非常聪明的物理专家。 \
 你擅长用一种简洁并且易于理解的方式去回答问题。\
 当你不知道问题的答案时，你承认\
@@ -197,7 +197,12 @@ prompt_infos = [
     }
 ]
 
-# 构建目标链条
+
+'''
+------------------2）构建目标链条，默认链条和依照目标链条创建路由链-----------------------
+'''
+
+'''# 2-1)构建目标链'''
 destination_chains = {}
 for p_info in prompt_infos:
     name = p_info["名字"]
@@ -210,14 +215,7 @@ destinations = [f"{p['名字']}: {p['描述']}" for p in prompt_infos]
 destinations_str = "\n".join(destinations)
 print(destinations_str)
 
-
-# 构建默认目标链
-default_prompt = ChatPromptTemplate.from_template("{input}")
-default_chain = LLMChain(llm=llm, prompt=default_prompt)
-
-
-
-# 多提示路由模板
+'''# 2-2 根据目标链条，构建路由链'''
 MULTI_PROMPT_ROUTER_TEMPLATE = """给语言模型一个原始文本输入，\
 让其选择最适合输入的模型提示。\
 系统将为您提供可用提示的名称以及最适合改提示的描述。\
@@ -232,8 +230,6 @@ MULTI_PROMPT_ROUTER_TEMPLATE = """给语言模型一个原始文本输入，\
     "destination": 字符串 \ 使用的提示名字或者使用 "DEFAULT"
     "next_inputs": 字符串 \ 原始输入的改进版本
 }}}}
-
-
 
 记住：“destination”必须是下面指定的候选提示名称之一，\
 或者如果输入不太适合任何候选提示，\
@@ -260,11 +256,10 @@ MULTI_PROMPT_ROUTER_TEMPLATE = """给语言模型一个原始文本输入，\
 }}}}
 
 """
- 
-#构建路由链,这里模版里先传入了一个参数
 router_template = MULTI_PROMPT_ROUTER_TEMPLATE.format(
     destinations=destinations_str
 )
+
 # 这里传入最终参数，注意用的是PromptTemplate，而不是ChatPromptTemplate
 router_prompt = PromptTemplate(
     template=router_template, # 这里传入的是模版
@@ -275,7 +270,16 @@ router_prompt = PromptTemplate(
 router_chain = LLMRouterChain.from_llm(llm, router_prompt)
 
 
-# 创建整体链路
+'''2-3) 创建默认链 '''
+# 构建默认目标链
+default_prompt = ChatPromptTemplate.from_template("{input}")
+default_chain = LLMChain(llm=llm, prompt=default_prompt)
+
+
+
+'''
+------------------2）构建整体链-----------------------
+'''
 # 路由链路接收到信息，给到目标链路，然后目标链路返回结果，如果没有匹配到走default
 chain = MultiPromptChain(router_chain=router_chain,    #l路由链路
                          destination_chains=destination_chains,   #目标链路

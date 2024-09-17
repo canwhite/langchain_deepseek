@@ -5,6 +5,13 @@ from langchain.indexes import VectorstoreIndexCreator #导入向量存储索引�
 from langchain_huggingface import HuggingFaceEmbeddings
 from tool import llm ,get_completion
 from langchain.prompts import ChatPromptTemplate
+import os
+# 设置环境变量以避免 tokenizers 警告
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+'''
+===========================section1: 创建llm=========================
+'''
 
 # #加载中文数据
 file = 'docs/product_data.csv'
@@ -45,12 +52,71 @@ qa = RetrievalQA.from_chain_type(
     }
 )
 
-print(data[1])
 
-#确保data[1]是一个字符串
-query = data[1].page_content if hasattr(data[1], 'page_content') else str(data[1])
+examples = [
+    {
+        "query": "Do the Cozy Comfort Pullover Set have side pockets?",
+        "answer": "Yes"
+    },
+    {
+        "query": "What collection is the Ultra-Lofty 850 Stretch Down Hooded Jacket from?",
+        "answer": "The DownTek collection"
+    }
+]
 
 
 
-res = qa.run(f"{query} 请求结果请转化为中文")
-print(res)
+'''
+=============================setction2: 人工比较============================
+'''
+
+from langchain.evaluation.qa import QAGenerateChain #导入QA生成链，它将接收文档，并从每个文档中创建一个问题答案对
+import langchain
+
+'''
+example_gen_chain = QAGenerateChain.from_llm(llm)
+#为所有不同的示例创建预测
+new_examples = example_gen_chain.apply([{"doc": t} for t in data[:5]]) 
+
+#查看用例数据
+examples += [ v for item in new_examples for k,v in item.items()]
+print(examples);
+
+langchain.debug = True
+
+qa.run(examples[0]["query"])
+
+langchain.debug = False
+
+'''
+
+
+'''
+=============================setction3: 自动比较============================
+'''
+
+# 对预测的结果进行评估，导入QA问题回答，评估链，通过语言模型创建此链
+from langchain.evaluation.qa import QAEvalChain #导入QA问题回答，评估链
+
+
+langchain.debug = False
+#为所有不同的示例创建预测
+predictions = qa.apply(examples) 
+
+#通过调用chatGPT进行评估
+# llm = ChatOpenAI(temperature=0)
+eval_chain = QAEvalChain.from_llm(llm)
+
+#在此链上调用evaluate，进行评估
+graded_outputs = eval_chain.evaluate(examples, predictions)
+
+#我们将传入示例和预测，得到一堆分级输出，循环遍历它们打印答案
+for i, eg in enumerate(examples):
+    print(f"Example {i}:")
+    print("Question: " + predictions[i]['query'])
+    #一个是真实结果，一个是预测结果
+    print("Real Answer: " + predictions[i]['answer'])
+    print("Predicted Answer: " + predictions[i]['result'])
+    #打印最终的评价
+    print("Predicted Grade: " + graded_outputs[i]['results'])
+    print()

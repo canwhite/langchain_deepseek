@@ -40,8 +40,9 @@ query = "如何在Cesium中集成Babylon？"
 # parser和query合成一个prompt，实际上我觉的这个PrmoptTemplate有点过于巨大了
 prompt = PromptTemplate(
     template="根据用户输入的问题得到任务JSON.\n{format_instructions}\n{query}\n",
-    input_variables=["query"],
-    #上述parser就是为了确定返回json
+    #动态输入
+    input_variables=["query"], 
+    #预填装常量
     partial_variables={"format_instructions": parser.get_format_instructions()},
 )
 

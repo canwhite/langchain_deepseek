@@ -1,7 +1,9 @@
 from langchain_openai import ChatOpenAI
+from dotenv import load_dotenv
 import os
 
-API_KEY=  os.getenv("DEEPSEEK_KEY")
+load_dotenv()
+API_KEY = os.getenv("DEEPSEEK_KEY")
 BASE_URL = "https://api.deepseek.com"
 
 

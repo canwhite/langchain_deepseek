@@ -30,6 +30,43 @@ class MindMapNode:
     note: str = ""      # 代码块内容存储在 note 属性中
 
 
+def markdown_to_text(text: str) -> str:
+    """将 Markdown 格式文本转为纯文本"""
+    # 移除粗体标记 **text** → text
+    text = re.sub(r'\*\*([^\*]+)\*\*', r'\1', text)
+    # 移除行内代码 `code` → code
+    text = re.sub(r'`([^`]+)`', r'\1', text)
+    # 移除链接 [text](url) → text
+    text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', text)
+    return text
+
+
+def format_table(rows: list[str]) -> str:
+    """将 Markdown 表格转为纯文本"""
+    if not rows:
+        return ""
+    # 过滤掉分隔行 (|---|---|)，统计有效行
+    valid_rows = []
+    for row in rows:
+        cells = [c.strip() for c in row.split('|')[1:-1]]
+        if cells and not all(re.match(r'^[-:]+$', c) for c in cells):
+            valid_rows.append(cells)
+    if not valid_rows:
+        return ""
+    # 计算每列最大宽度
+    cols = max(len(cells) for cells in valid_rows)
+    widths = [0] * cols
+    for cells in valid_rows:
+        for j, cell in enumerate(cells):
+            widths[j] = max(widths[j], len(cell))
+    # 格式化每一行
+    lines = []
+    for cells in valid_rows:
+        line = '  '.join(markdown_to_text(cells[j]).ljust(widths[j]) if j < len(cells) else ''.ljust(widths[j]) for j in range(cols))
+        lines.append(line)
+    return '\n'.join(lines)
+
+
 def parse_markdown(filepath: str) -> MindMapNode:
     """解析 Markdown 文件，构建思维导图树结构"""
     with open(filepath, 'r', encoding='utf-8') as f:
@@ -89,13 +126,14 @@ def parse_markdown(filepath: str) -> MindMapNode:
         heading_text = m.group(2).strip()
 
         # 移除 Markdown 链接和粗体
-        heading_text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', heading_text)
-        heading_text = re.sub(r'\*\*([^\*]+)\*\*', r'\1', heading_text)
-        heading_text = re.sub(r'`([^`]+)`', r'\1', heading_text)
+        heading_text = markdown_to_text(heading_text)
 
-        # 收集标题后面的内容（列表项、段落），直到下一个标题或代码块
+        # 收集标题后面的内容（列表项、段落、表格），直到下一个标题或代码块
         body_lines = []
         j = i + 1
+        table_rows = []
+        in_table = False
+
         while j < len(lines):
             next_line = lines[j].rstrip()
 
@@ -106,22 +144,44 @@ def parse_markdown(filepath: str) -> MindMapNode:
             if next_line.strip() == '---':
                 break
 
+            # 表格行
+            if next_line.strip().startswith('|'):
+                in_table = True
+                table_rows.append(next_line.strip())
+                j += 1
+                continue
+            elif in_table and not next_line.strip():
+                # 空行后结束表格
+                in_table = False
+                if table_rows:
+                    body_lines.append(format_table(table_rows))
+                    table_rows = []
+                j += 1
+                continue
+            elif in_table:
+                # 表格后非表格行，结束表格
+                in_table = False
+                if table_rows:
+                    body_lines.append(format_table(table_rows))
+                    table_rows = []
+
             # 列表项：- text 或 * text
             list_m = re.match(r'^[-*]\s+(.+)$', next_line.strip())
             if list_m:
-                item_text = list_m.group(1).strip()
-                # 移除粗体
-                item_text = re.sub(r'\*\*([^\*]+)\*\*', r'\1', item_text)
-                body_lines.append(f"• {item_text}")
+                item_text = markdown_to_text(list_m.group(1).strip())
+                body_lines.append(f"○ {item_text}")
             elif next_line.strip() and not next_line.startswith('#'):
                 # 非空非标题行作为段落
                 para = next_line.strip()
                 if para:
-                    para = re.sub(r'\*\*([^\*]+)\*\*', r'\1', para)
-                    para = re.sub(r'`([^`]+)`', r'\1', para)
+                    para = markdown_to_text(para)
                     body_lines.append(para)
 
             j += 1
+
+        # 处理末尾的表格
+        if table_rows:
+            body_lines.append(format_table(table_rows))
 
         # 合并标题和内容
         if body_lines:
@@ -206,7 +266,7 @@ def generate_mapdata_xml(root: MindMapNode, title: str = "Mind Map") -> str:
                 wrapped = f"```\n{child.note}\n```"
                 escaped_text = escape_text(wrapped).replace('\n', '&#10;')
             else:
-                escaped_text = escape_text(child.text)
+                escaped_text = escape_text(child.text).replace('\n', '&#10;')
 
             if child.children:
                 # depth<=1 的节点，子节点用 Y_SCALE 布局

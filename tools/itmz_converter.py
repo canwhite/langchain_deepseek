@@ -42,8 +42,11 @@ def parse_markdown(filepath: str) -> MindMapNode:
 
     in_code_block = False
     code_block_lines = []
+    i = 0
 
-    for line in lines:
+    while i < len(lines):
+        line = lines[i]
+
         # 代码块处理
         if line.strip().startswith('```'):
             if not in_code_block:
@@ -62,30 +65,72 @@ def parse_markdown(filepath: str) -> MindMapNode:
                     if node_stack:
                         node_stack[-1].children.append(node)
                     node_stack.append(node)
+                    code_block_lines = []
+            i += 1
             continue
 
         if in_code_block:
             code_block_lines.append(line)
+            i += 1
             continue
 
         # 分隔线忽略
         if line.strip() == '---':
+            i += 1
             continue
 
         # 标题匹配
         m = re.match(r'^(#{1,6})\s+(.+)$', line.lstrip())
         if not m:
+            i += 1
             continue
 
         level = len(m.group(1))
-        text = m.group(2).strip()
+        heading_text = m.group(2).strip()
 
         # 移除 Markdown 链接和粗体
-        text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', text)
-        text = re.sub(r'\*\*([^\*]+)\*\*', r'\1', text)
-        text = re.sub(r'`([^`]+)`', r'\1', text)
+        heading_text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', heading_text)
+        heading_text = re.sub(r'\*\*([^\*]+)\*\*', r'\1', heading_text)
+        heading_text = re.sub(r'`([^`]+)`', r'\1', heading_text)
 
-        add_node_to_tree(node_stack, level, text)
+        # 收集标题后面的内容（列表项、段落），直到下一个标题或代码块
+        body_lines = []
+        j = i + 1
+        while j < len(lines):
+            next_line = lines[j].rstrip()
+
+            # 遇到下一个标题或代码块就停止
+            if next_line.strip().startswith('```') or re.match(r'^(#{1,6})\s+', next_line.lstrip()):
+                break
+            # 遇到分隔线也停止
+            if next_line.strip() == '---':
+                break
+
+            # 列表项：- text 或 * text
+            list_m = re.match(r'^[-*]\s+(.+)$', next_line.strip())
+            if list_m:
+                item_text = list_m.group(1).strip()
+                # 移除粗体
+                item_text = re.sub(r'\*\*([^\*]+)\*\*', r'\1', item_text)
+                body_lines.append(f"• {item_text}")
+            elif next_line.strip() and not next_line.startswith('#'):
+                # 非空非标题行作为段落
+                para = next_line.strip()
+                if para:
+                    para = re.sub(r'\*\*([^\*]+)\*\*', r'\1', para)
+                    para = re.sub(r'`([^`]+)`', r'\1', para)
+                    body_lines.append(para)
+
+            j += 1
+
+        # 合并标题和内容
+        if body_lines:
+            node_text = heading_text + "\n" + "\n".join(body_lines)
+        else:
+            node_text = heading_text
+
+        add_node_to_tree(node_stack, level, node_text)
+        i = j
 
     return root
 

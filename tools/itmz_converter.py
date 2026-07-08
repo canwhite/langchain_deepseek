@@ -124,7 +124,7 @@ def generate_mapdata_xml(root: MindMapNode, title: str = "Mind Map") -> str:
     """
     def escape_text(text: str) -> str:
         """转义 XML 特殊字符"""
-        return xml.sax.saxutils.escape(text)
+        return xml.sax.saxutils.escape(text, {'"': '&quot;'})
 
     def format_timestamp() -> str:
         """生成当前时间戳"""
@@ -136,6 +136,8 @@ def generate_mapdata_xml(root: MindMapNode, title: str = "Mind Map") -> str:
     # 构建所有 topic 行
     lines = []
 
+    Y_SCALE = 10  # 压缩 Y 范围，避免超出 iThoughts 画布
+
     def add_topics(node: MindMapNode, depth: int = 0, y_offset: int = 0):
         """递归添加所有子节点，使用自然树状布局"""
         x_base = 150  # 每个层级增加的固定值
@@ -145,31 +147,38 @@ def generate_mapdata_xml(root: MindMapNode, title: str = "Mind Map") -> str:
             escaped_text = escape_text(child.text)
 
             # 计算位置
-            x = depth * x_base
+            # depth=0/1 的节点全部在 y=0（水平排列），避免超出画布
+            if depth <= 1:
+                x = 150 if depth == 1 else 0
+                y = 0
+            else:
+                x = depth * x_base
+                sibling_offset = int((i - len(node.children) / 2) * Y_SCALE)
+                y = y_offset + sibling_offset
 
-            # Y = 父节点Y + 兄弟节点偏移（交替正负，模拟自然树状布局）
-            sibling_offset = (i - len(node.children) / 2) * 80
-            y = y_offset + sibling_offset
-
-            # 如果有 note（代码内容），转义并用 &#10; 表示换行
-            note_attr = ""
+            # 如果有 note（代码块），用 ``` 包裹，换行用 &#10;
             if child.note:
-                escaped_note = escape_text(child.note).replace('\n', '&#10;')
-                note_attr = f' note="{escaped_note}"'
+                wrapped = f"```\n{child.note}\n```"
+                escaped_text = escape_text(wrapped).replace('\n', '&#10;')
+            else:
+                escaped_text = escape_text(child.text)
 
             if child.children:
-                # 有子节点 - 计算子节点的Y起始位置
-                child_y_start = y - (len(child.children) / 2) * 80
+                # depth<=1 的节点，子节点用 Y_SCALE 布局
+                if depth <= 1:
+                    child_y_start = -int((len(child.children) / 2) * Y_SCALE)
+                else:
+                    child_y_start = y - int((len(child.children) / 2) * Y_SCALE)
 
                 lines.append(
-                    f'<topic uuid="{topic_id}" position="{{{x}, {y}}}" text="{escaped_text}"{note_attr} created="{timestamp}" modified="{timestamp}">'
+                    f'<topic uuid="{topic_id}" position="{{{x}, {y}}}" text="{escaped_text}" created="{timestamp}" modified="{timestamp}">'
                 )
                 add_topics(child, depth + 1, child_y_start)
                 lines.append('</topic>')
             else:
                 # 叶节点
                 lines.append(
-                    f'<topic uuid="{topic_id}" position="{{{x}, {y}}}" text="{escaped_text}"{note_attr} created="{timestamp}" modified="{timestamp}">'
+                    f'<topic uuid="{topic_id}" position="{{{x}, {y}}}" text="{escaped_text}" created="{timestamp}" modified="{timestamp}">'
                 )
                 lines.append('</topic>')
 
